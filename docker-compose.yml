@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: laravel-app
+    ports:
+      - "8080:80"
+      - "5173:5173"
+    volumes:
+      # Configurazione Apache
+      - ./vhost.conf:/etc/httpd/conf.d/vhost.conf:ro
+      - .:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
+    
+    # Passiamo le credenziali DB a Laravel tramite variabili d'ambiente
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db       
+      DB_PORT: 3306
+      DB_DATABASE: laravel
+      DB_USERNAME: franc
+      DB_PASSWORD: franc
+      APP_ENV: local
+      APP_DEBUG: 'true'
+
+    # Attende che il database sia VERAMENTE pronto prima di avviare l'app
+    depends_on:
+      db:
+        condition: service_healthy
+    
+    networks:
+      - laravel-network
+    
+    restart: always
+
+  db:
+    image: mysql:8.0
+    container_name: mio-mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: franc
+      MYSQL_PASSWORD: franc
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel-network
+    restart: always
+    # Healthcheck: dice a Docker quando il DB è pronto a ricevere connessioni
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+
+networks:
+  laravel-network:
+    driver: bridge
+volumes:
+  db_data:

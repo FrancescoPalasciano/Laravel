@@ -6,10 +6,11 @@ import DragHandle from "./DragHandle.vue"
 export const schema = z.object({
   id: z.number(),
   name: z.string(),
+  surname: z.string(),
   // type: z.string(),
   // status: z.string(),
   email: z.string(),
-  email_verified_at: z.string().nullable(),
+  phone: z.string().optional(),
   created_at: z.string(),
   // reviewer: z.string(),
 })
@@ -89,10 +90,11 @@ const props = defineProps<{
 interface TableData {
   id: number
   name: string
+  surname: string
+  phone: string | null
   // type: string
   // status: string
   email: string
-  email_verified_at: string | null
   created_at: string
   // reviewer: string
 }
@@ -123,12 +125,7 @@ const columns: ColumnDef<TableData>[] = [
   //   enableSorting: false,
   //   enableHiding: false,
   // },
-  {
-    accessorKey: "id",
-    header: "Id",
-    cell: ({ row }) => h("div", String(row.getValue("id"))),
-    enableHiding: false,
-  },
+  
     // {
     //   accessorKey: "type",
     //   header: "Section Type",
@@ -150,9 +147,15 @@ const columns: ColumnDef<TableData>[] = [
   //   },
   // },
   {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => h("div", String(row.getValue("name"))),
+    accessorKey: "id",
+    header: "Id",
+    cell: ({ row }) => h("div", String(row.getValue("id"))),
+  },
+  {
+    accessorKey: "full_name", // Quando usi accessorFn, serve un ID unico
+    header: "Nome e Cognome",
+    accessorFn: (row) => `${row.name} ${row.surname}`,
+    cell: ({ getValue }) => h("div", getValue()),
   },
   {
     accessorKey: "email",
@@ -160,40 +163,75 @@ const columns: ColumnDef<TableData>[] = [
     cell: ({ row }) => h("div", String(row.getValue("email"))),
   },
   {
+    accessorKey: "phone",
+    header: "Telefono",
+    cell: ({ row }) => h("div", String(row.getValue("phone") ?? "-")),
+  },
+  {
     accessorKey: "created_at",
-    header: "Created At",
+    header: "Registrato il",
     cell: ({ row }) => h("div", String(row.getValue("created_at"))),
   },
   {
-    accessorKey: "email_verified_at",
-    header: "Email Verified At",
-    cell: ({ row }) => h("div", String(row.getValue("email_verified_at"))),
-  },
-  {
     id: "actions",
-    header: "Actions",
-    cell: () => h(DropdownMenu, {}, {
-      default: () => [
-        h(DropdownMenuTrigger, { asChild: true }, {
-          default: () => h(Button, {
-            variant: "ghost",
-            class: "h-8 w-8 p-0",
-          }, {
+    header: "Azione",
+    cell: ({ row }) => {
+      const user = row.original;
+      // Recuperiamo il token CSRF dal meta tag (standard in Laravel)
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+      return h(DropdownMenu, {}, {
+        default: () => [
+          h(DropdownMenuTrigger, { asChild: true }, {
+            default: () => h(Button, {
+              variant: "ghost",
+              class: "h-8 w-8 p-0",
+            }, {
+              default: () => [
+                h("span", { class: "sr-only" }, "Open menu"),
+                h(IconDotsVertical, { class: "h-4 w-4" }),
+              ],
+            }),
+          }),
+          h(DropdownMenuContent, { align: "end" }, {
             default: () => [
-              h("span", { class: "sr-only" }, "Open menu"),
-              h(IconDotsVertical, { class: "h-4 w-4" }),
+              // EDIT: Utilizza il form che ho creato nel componente
+              h(DropdownMenuItem, {
+                  isForm: true,
+                  action: "/modifica",
+                  method: "POST",
+                  onClick: (e) => {
+                      // Nessun confirm necessario per andare in edit
+                  }
+              }, {
+                  default: () => "Visualizza",
+                  csrf: () => h("input", { type: "hidden", name: "_token", value: csrfToken }),
+                  // Passiamo l'ID nascosto qui
+                  fields: () => h("input", { type: "hidden", name: "user_id", value: user.id })
+              }),
+              
+              h(DropdownMenuSeparator, {}),
+              
+              // DELETE: Utilizza il form che ho creato nel componente
+              h(DropdownMenuItem, {
+                  isForm: true,
+                  action: "/delete-user",
+                  method: "POST",
+                  variant: "destructive",
+                  onClick: (e) => {
+                      if (!confirm("Sei sicuro?")) e.preventDefault();
+                  }
+              }, {
+                  default: () => "Elimina",
+                  csrf: () => h("input", { type: "hidden", name: "_token", value: csrfToken }),
+                  // Passiamo l'ID qui
+                  fields: () => h("input", { type: "hidden", name: "user_id", value: user.id })
+              }),
             ],
           }),
-        }),
-        h(DropdownMenuContent, { align: "end" }, {
-          default: () => [
-            h(DropdownMenuItem, {}, () => "Edit"),
-            h(DropdownMenuSeparator, {}),
-            h(DropdownMenuItem, {}, () => "Delete"),
-          ],
-        }),
-      ],
-    }),
+        ],
+      });
+    },
   },
 ]
 
@@ -330,7 +368,7 @@ const table = useVueTable({
                 </TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody class="**:data-[slot=table-cell]:first:w-8">
+            <TableBody class="**:data-[slot=table-cell]:border-b-foreground/10">
               <template v-if="table.getRowModel().rows.length">
                 <DraggableRow v-for="row in table.getRowModel().rows" :key="row.id" :row="row" :index="row.index" />
               </template>

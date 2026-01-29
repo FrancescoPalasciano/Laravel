@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class UtentiController extends Controller
 {
@@ -12,8 +13,11 @@ class UtentiController extends Controller
             return [
                 'id' => $user->id,
                 'name' => $user->name,
+                'surname' => $user->surname,
+                'phone' => $user->phone,
+                'CF' => $user->CF,
+                'address' => $user->address,
                 'email' => $user->email,
-                'email_verified_at' => $user->email_verified_at ? $user->email_verified_at->format('d/m/Y H:i:s') : 'Non verificata',
                 'created_at' => $user->created_at->format('d/m/Y'),
             ];
         })->toArray();

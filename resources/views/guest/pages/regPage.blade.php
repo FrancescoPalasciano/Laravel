@@ -21,10 +21,60 @@
                     type="text" 
                     id="name" 
                     name="name" 
-                    placeholder="Il tuo nome e Cognome"
+                    placeholder="Il tuo nome"
                     maxlength="50"
                     class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition duration-200"
                     required
+                >
+            </div>
+
+            <div>
+                <label for="surname" class="block text-sm font-medium text-gray-700 mb-2">Cognome</label>
+                <input 
+                    type="text" 
+                    id="surname" 
+                    name="surname" 
+                    placeholder="Il tuo Cognome" 
+                    maxlength="30"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition duration-200"
+                    required
+                >
+            </div>
+
+            <div>
+                <label for="CF" class="block text-sm font-medium text-gray-700 mb-2">Codice Fiscale</label>
+                <input 
+                    type="text" 
+                    id="CF" 
+                    name="CF" 
+                    placeholder="Il tuo Codice Fiscale" 
+                    maxlength="16"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition duration-200"
+                    required
+                >
+            </div>
+
+            <div>
+                <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Indirizzo</label>
+                <input 
+                    type="text" 
+                    id="address" 
+                    name="address" 
+                    placeholder="La tua via e città" 
+                    maxlength="100"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition duration-200"
+                >
+            </div>
+
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Numero di Telefono</label>
+                <input 
+                    type="text" 
+                    id="phone" 
+                    name="phone" 
+                    placeholder="Il tuo numero di telefono" 
+                    maxlength="15"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition duration-200"
                 >
             </div>
             

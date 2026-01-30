@@ -29,8 +29,8 @@ class UserFactory extends Factory
         'email' => fake()->unique()->safeEmail(),
         'password' => static::$password ??= Hash::make('password'),
         'remember_token' => Str::random(10),
-        'CF' => fake()->regexify('[A-Z]{6}[0-9]{2}[A-Z]{1}[0-9]{2}[A-Z]{1}[0-9]{3}[A-Z]{1}'),
-        'phone' => fake()->phoneNumber(),
+        'CF' => fake()->regexify('/^[A-Za-z]{6}[0-9]{2}[A-Za-z]{1}[0-9]{2}[A-Za-z]{1}[0-9]{3}[A-Za-z]{1}$/'),
+        'phone' => fake()->regexify('/^\\+?[1-9][0-9]{7,14}$/'),
         'address' => fake()->address(),
     ];
     }

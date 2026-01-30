@@ -146,6 +146,11 @@ const columns: ColumnDef<TableData>[] = [
   //     ])
   //   },
   // },
+  // {
+  //   accessorKey: "created_at",
+  //   header: "Registrato il",
+  //   cell: ({ row }) => h("div", String(row.getValue("created_at"))),
+  // },
   {
     accessorKey: "id",
     header: "Id",
@@ -166,11 +171,6 @@ const columns: ColumnDef<TableData>[] = [
     accessorKey: "phone",
     header: "Telefono",
     cell: ({ row }) => h("div", String(row.getValue("phone") ?? "-")),
-  },
-  {
-    accessorKey: "created_at",
-    header: "Registrato il",
-    cell: ({ row }) => h("div", String(row.getValue("created_at"))),
   },
   {
     id: "actions",
@@ -195,19 +195,9 @@ const columns: ColumnDef<TableData>[] = [
           }),
           h(DropdownMenuContent, { align: "end" }, {
             default: () => [
-              // EDIT: Utilizza il form che ho creato nel componente
-              h(DropdownMenuItem, {
-                  isForm: true,
-                  action: "/modifica",
-                  method: "POST",
-                  onClick: (e) => {
-                      // Nessun confirm necessario per andare in edit
-                  }
-              }, {
-                  default: () => "Visualizza",
-                  csrf: () => h("input", { type: "hidden", name: "_token", value: csrfToken }),
-                  // Passiamo l'ID nascosto qui
-                  fields: () => h("input", { type: "hidden", name: "user_id", value: user.id })
+              // EDIT: utilizzo un link semplice
+              h(DropdownMenuItem, { class: 'p-0' }, {
+                  default: () => h('a', { href: `/visualizza/${user.id}`, class: 'block w-full h-full px-4 py-2' }, "Visualizza")
               }),
               
               h(DropdownMenuSeparator, {}),
@@ -227,6 +217,13 @@ const columns: ColumnDef<TableData>[] = [
                   // Passiamo l'ID qui
                   fields: () => h("input", { type: "hidden", name: "user_id", value: user.id })
               }),
+              
+              h(DropdownMenuSeparator, {}),
+
+              h(DropdownMenuItem, { class: 'p-0' }, {
+                  default: () => h('a', { href: `/visualizza/${user.id}`, class: 'block w-full h-full px-4 py-2' }, "Visualizza")
+              }),
+              
             ],
           }),
         ],

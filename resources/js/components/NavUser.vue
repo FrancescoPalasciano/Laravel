@@ -33,11 +33,16 @@ const props = defineProps<{
   user: {
     name: string
     email: string
+    id: number
     avatar: string
   }
 }>()
 
 const { isMobile } = useSidebar()
+
+const viewUser = (id) => {
+  window.location.href = `/visualizza/${id}`;
+}
 
 const logout = () => {
   const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
@@ -96,9 +101,9 @@ const logout = () => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem @click="viewUser(user.id)">
               <BadgeCheck />
-              Account
+              <span>My Account</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />

@@ -49,6 +49,8 @@ Route::group(['middleware' => 'auth'], function () {
     //modifica in get
     Route::get('/visualizza/{id}', [UtentiController::class, 'visualizza'])->name('Modifica');
 
+    Route::get('/status/{id}', [UtentiController::class, 'status'])->name('status');
+
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 });
 

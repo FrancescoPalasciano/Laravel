@@ -17,6 +17,7 @@ class AuthController extends Controller
 {
     // Gestisce il login
     public function login(Request $request) {
+
         
         // 1. Validazione base
         $credentials = $request->validate([
@@ -29,6 +30,14 @@ class AuthController extends Controller
             'password.max' => "Errore, riprova.",
             'email.max' => "Errore, riprova.",
         ]);
+
+        $user = User::where('email', $request->input('email'))->first();
+        // Controlliamo se l'utente esiste e se è disabilitato
+        if ($user && $user->status === 'Inactive') {
+            return back()->withErrors([
+                'email' => "Il tuo account è disabilitato.",
+            ])->onlyInput('email');
+        }
         
         // Creiamo una chiave unica per questo utente (basata su email e indirizzo IP)
         $throttleKey = 'login:' . Str::lower($request->input('email')) . '|' . $request->ip();
@@ -143,7 +152,7 @@ class AuthController extends Controller
         ]);
 
         // 4. Reindirizza alla login con un messaggio di successo (se vuoi)
-        return redirect('/login')->with('status', 'Registrazione completata! Ora puoi accedere.');
+        return back()->with('status', 'Registrazione utente completata!');
     }
 
     public function logout(Request $request) {

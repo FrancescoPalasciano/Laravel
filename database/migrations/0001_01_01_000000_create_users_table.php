@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('CF')->unique();
             $table->string('address')->nullable();
             $table->string('phone')->nullable()->unique();
+            $table->string('status')->default('Active');
             $table->string('password');
             $table->softDeletes();
             $table->rememberToken();

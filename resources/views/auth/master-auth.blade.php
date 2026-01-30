@@ -15,20 +15,22 @@
 
     <div id="app">
         <sidebar-provider>
-            <app-sidebar variant="inset" :user='@json(auth()->user() ? ["name" => auth()->user()->name, "email" => auth()->user()->email] : null)'></app-sidebar>
+            <app-sidebar variant="inset" :user='@json(auth()->user() ? ["name" => auth()->user()->name, "email" => auth()->user()->email, "id" => auth()->user()->id] : null, )'></app-sidebar>
             <sidebar-inset class="flex flex-1 flex-col min-w-0 overflow-hidden">
                 <site-header></site-header>
                 @yield('content-auth')
             </sidebar-inset>
         </sidebar-provider>
+        <!-- <router-view />
+        <Toaster position="top-right" rich-colors close-button /> -->
     </div>
 <!-- TASK -->
-<!-- tabella -->
-<!-- inserire il create -->
 <!-- spostare i validator -->
-<!-- modifica alert -->
-<!-- disattivazione utente -->
+<!-- modifica alert --QUASI -->
 <!-- indentare il codice BENE -QUASI FATTO -->
+<!-- inserire il create -FATTO -->
+<!-- disattivazione utente -FATTO -->
+<!-- tabella -FATTO -->
 <!-- spostare le crude utente nell'user controller -FATTO-->
 <!-- sistemare le rotte e reindirizzamenti -FATTO-->
 <!-- sistemnare regex numero -FATTO-->
@@ -46,6 +48,17 @@
             document.body.classList.remove('loading');
         }, 500);
     });
+
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.bg-green-100, .bg-red-100');
+        alerts.forEach(alert => {
+            alert.style.transition = 'opacity 0.5s ease-out';
+            alert.style.opacity = '0';
+            setTimeout(() => {
+                alert.remove();
+            }, 500);
+        });
+    }, 2000);
 </script>
 </body>
 </html>

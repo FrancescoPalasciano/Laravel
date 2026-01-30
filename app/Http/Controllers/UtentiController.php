@@ -24,6 +24,7 @@ class UtentiController extends Controller
                 'CF' => $user->CF,
                 'address' => $user->address,
                 'email' => $user->email,
+                'status' => $user->status,
                 'created_at' => $user->created_at->format('d/m/Y'),
             ];
         })->toArray();
@@ -202,5 +203,24 @@ class UtentiController extends Controller
     public function visualizza($id) {
         $user = User::findOrFail($id);
         return view('auth.pages.edit-user', compact('user'));
+    }
+
+    public function status($id) {
+        $logUser = Auth::user();
+        
+        if ($logUser->id == $id) {
+            return redirect()->route('utenti')->with('error', 'Non puoi modificare lo stato del tuo stesso account.');
+        }
+
+        $user = User::findOrFail($id);
+        if ($user->status === 'Active') {
+            $user->status = 'Disabled';
+        } else {
+            $user->status = 'Active';
+        }   
+        $user->save();
+
+        $statusMessage = $user->status === 'Active' ? 'Utente abilitato con successo.' : 'Utente disabilitato con successo.';
+        return redirect()->route('utenti')->with('status', $statusMessage);
     }
 }

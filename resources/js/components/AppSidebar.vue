@@ -29,6 +29,7 @@ import {
 interface UserData {
     name: string;
     email: string;
+    id: number;
     avatar: string;
 }
 
@@ -38,6 +39,7 @@ const props = withDefaults(defineProps<SidebarProps & { user?: UserData }>(), {
   user: () => ({
       name: 'Utente Ospite',
       email: 'guest@example.com',
+      id: 0,
       avatar: '',
   })
 })

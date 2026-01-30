@@ -2,15 +2,16 @@
 import { z } from "zod"
 import DraggableRow from "./DraggableRow.vue"
 import DragHandle from "./DragHandle.vue"
+import { toast } from 'vue-sonner'
 
 export const schema = z.object({
   id: z.number(),
   name: z.string(),
   surname: z.string(),
   // type: z.string(),
-  // status: z.string(),
   email: z.string(),
   phone: z.string().optional(),
+  status: z.string().optional(),
   created_at: z.string(),
   // reviewer: z.string(),
 })
@@ -36,6 +37,7 @@ import {
   IconLayoutColumns,
   IconLoader,
   IconPlus,
+  IconCircle,
 } from "@tabler/icons-vue"
 import {
   FlexRender,
@@ -103,6 +105,7 @@ const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
+const alert= document.getElementById('alert');
 
 const columns: ColumnDef<TableData>[] = [
   // {
@@ -134,43 +137,42 @@ const columns: ColumnDef<TableData>[] = [
     //   }, () => String(row.getValue("type"))),
     // },
   // {
-  //   accessorKey: "status",
-  //   header: "Status",
-  //   cell: ({ row }) => {
-  //     const status = row.getValue("status") as string
-  //     return h("div", { class: "flex items-center gap-2" }, [
-  //       status === "Done"
-  //         ? h(IconCircleCheckFilled, { class: "h-4 w-4 text-emerald-500" })
-  //         : h(IconLoader, { class: "h-4 w-4 animate-spin text-muted-foreground" }),
-  //       h("span", {}, status),
-  //     ])
-  //   },
-  // },
-  // {
   //   accessorKey: "created_at",
   //   header: "Registrato il",
   //   cell: ({ row }) => h("div", String(row.getValue("created_at"))),
   // },
+  // {
+  //   accessorKey: "id",
+  //   header: "Id",
+  //   cell: ({ row }) => h("div", String(row.getValue("id"))),
+  // },
   {
-    accessorKey: "id",
-    header: "Id",
-    cell: ({ row }) => h("div", String(row.getValue("id"))),
+    accessorKey: "status",
+    header: "Stato",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string
+      return h("div", { class: "flex items-center gap-2 px-2" }, [
+        status === "Active"
+          ? h(IconCircle, { class: "h-4 w-4 text-emerald-500" })
+          : h(IconCircle, { class: "h-4 w-4 text-orange-500" }),
+      ])
+    },
   },
   {
     accessorKey: "full_name", // Quando usi accessorFn, serve un ID unico
     header: "Nome e Cognome",
     accessorFn: (row) => `${row.name} ${row.surname}`,
-    cell: ({ getValue }) => h("div", getValue()),
+    cell: ({ row }) => h("div", row.getValue("full_name")),
   },
   {
     accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => h("div", String(row.getValue("email"))),
+    header: () => h("div", { class: "hidden lg:block" }, "Email"),
+    cell: ({ row }) => h("div",{ class: "hidden lg:block" }, String(row.getValue("email"))),
   },
   {
     accessorKey: "phone",
-    header: "Telefono",
-    cell: ({ row }) => h("div", String(row.getValue("phone") ?? "-")),
+    header: () => h("div", { class: "hidden lg:block" }, "Telefono"),
+    cell: ({ row }) => h("div",{ class: "hidden lg:block" }, String(row.getValue("phone") ?? "-")),
   },
   {
     id: "actions",
@@ -197,33 +199,46 @@ const columns: ColumnDef<TableData>[] = [
             default: () => [
               // EDIT: utilizzo un link semplice
               h(DropdownMenuItem, { class: 'p-0' }, {
-                  default: () => h('a', { href: `/visualizza/${user.id}`, class: 'block w-full h-full px-4 py-2' }, "Visualizza")
+                  default: () => h('a', { href: `/visualizza/${user.id}`, class: 'block w-full h-full px-2 py-2' }, "Visualizza")
               }),
               
               h(DropdownMenuSeparator, {}),
               
+              // DISABLE: utilizzo un link semplice
+
+              user.status === 'Active' ?
+              h(DropdownMenuItem, { class: 'p-0', variant: "warning",}, {
+                default: () => h('a', { href: `/status/${user.id}`, class: 'block w-full h-full px-2 py-2' }, "Disabilita")
+              })
+              :
+              h(DropdownMenuItem, { class: 'p-0', variant: "success",}, {
+                default: () => h('a', { href: `/status/${user.id}`, class: 'block w-full h-full px-2 py-2' }, "Abilita")
+              }),
+              
+              h(DropdownMenuSeparator, {}),
               // DELETE: Utilizza il form che ho creato nel componente
-              h(DropdownMenuItem, {
+              h(DropdownMenuItem, { 
                   isForm: true,
                   action: "/delete-user",
                   method: "POST",
                   variant: "destructive",
                   onClick: (e) => {
-                      if (!confirm("Sei sicuro?")) e.preventDefault();
+                    e.preventDefault();
+                    const alertElement = document.getElementById('alert');
+                    const inputUserId = document.getElementById('delete-user-id');
+
+                    alertElement.classList.remove('hidden');
+
+                    if (inputUserId) {
+                      inputUserId.value = user.id;
+                    }
                   }
               }, {
-                  default: () => "Elimina",
+                  default: () => h("span", {class: 'block w-full h-full '}, "Elimina"),
                   csrf: () => h("input", { type: "hidden", name: "_token", value: csrfToken }),
                   // Passiamo l'ID qui
                   fields: () => h("input", { type: "hidden", name: "user_id", value: user.id })
               }),
-              
-              h(DropdownMenuSeparator, {}),
-
-              h(DropdownMenuItem, { class: 'p-0' }, {
-                  default: () => h('a', { href: `/visualizza/${user.id}`, class: 'block w-full h-full px-4 py-2' }, "Visualizza")
-              }),
-              
             ],
           }),
         ],
@@ -355,6 +370,17 @@ const table = useVueTable({
       value="outline"
       class="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
     >
+      <div class="flex justify-between w-full max-h-50">
+        <h1 class="text-3xl font-bold px-4 lg:px-6">Gestione Utenti</h1>
+        <Button 
+            variant="outline" 
+            class="w-25px flex items-center px-4 lg:px-6"
+            onclick="document.getElementById('utenti-container').classList.remove('hidden').classList.add('position:absolute');"
+        >
+            Aggiungi Utente
+        </Button>
+      </div>
+    
       <div class="overflow-hidden rounded-lg border">
         <DragDropProvider :modifiers="[RestrictToVerticalAxis]">
           <Table>

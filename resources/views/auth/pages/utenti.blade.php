@@ -106,11 +106,21 @@
 
 <div class="flex flex-1 flex-col">
     <div class="px-4 lg:px-6 py-4 md:py-6">
-        @if (session('status'))
-            <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4 text-sm border border-green-200 shadow-sm">
-                {{ session('status') }}
-            </div>
-        @endif
+        <div class="fixed top-5 left-1/2 -translate-x-1/4 z-[1000] w-full max-w-md px-4 pointer-events-none">
+    
+            @if (session('error'))
+                <div class="pointer-events-auto bg-red-100 text-red-700 p-4 rounded-xl mb-4 text-sm border border-red-200 shadow-xl text-center font-medium">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if (session('status'))
+                <div class="pointer-events-auto bg-green-100 text-green-700 p-4 rounded-xl mb-4 text-sm border border-green-200 shadow-xl text-center font-medium">
+                    {{ session('status') }}
+                </div>
+            @endif
+            
+        </div>
         <div class="w-full"> 
             <data-table :data='@json($data)'></data-table> 
         </div>

@@ -12,24 +12,17 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreUserRequest;
 
 class AuthController extends Controller
 {
+
     // Gestisce il login
-    public function login(Request $request) {
+    public function login(StoreUserRequest $request) {
 
         
         // 1. Validazione base
-        $credentials = $request->validate([
-            'email' => ['required', 'email', 'max:30'],
-            'password' => ['required', 'max:20'],
-        ], [
-            'email.required' => "L'email è obbligatoria.",
-            'email.email' => "Inserisci un indirizzo email valido.",
-            'password.required' => "La password è obbligatoria.",
-            'password.max' => "Errore, riprova.",
-            'email.max' => "Errore, riprova.",
-        ]);
+        $credentials = $request->validated();
 
         $user = User::where('email', $request->input('email'))->first();
         // Controlliamo se l'utente esiste e se è disabilitato
@@ -81,63 +74,10 @@ class AuthController extends Controller
 
 
     // Funzione che gestisce la REGISTRAZIONE
-    public function register(Request $request) {
+    public function register(StoreUserRequest $request) {
         
         // 1. Validiamo i dati in arrivo
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email'], 
-            'password' => ['required', 'min:8', 'confirmed'], 
-            'surname' => ['required', 'string', 'max:30'],
-            'CF' => [
-                'required', 
-                'string', 
-                'unique:users,CF', 
-                'size:16',
-                'regex:/^[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST]{1}[0-9LMNPQRSTUV]{2}[A-Z]{1}[0-9LMNPQRSTUV]{3}[A-Z]{1}$/i'
-            ],
-            'address' => ['nullable', 'string', 'max:100'],
-            'phone' => [
-                'nullable', 
-                'string', 
-                'unique:users,phone', 
-                'min:9',   // Un numero di cellulare italiano ha minimo 9 cifre
-                'max:13', 
-                'regex:/^\\+?[1-9][0-9]{7,14}$/'
-            ],
-        ], [
-            // Messaggi personalizzati per la Registrazione
-            'name.required' => "Il nome è obbligatorio.",
-            'name.string' => "Il nome deve essere un testo valido.",
-            'name.max' => "Il nome non può superare 255 caratteri.",
-            
-            'email.required' => "L'email è obbligatoria.",
-            'email.email' => "Il formato dell'email non è valido.",
-            'email.unique' => "Questa email è già stata registrata.",
-            
-            'password.required' => "La password è obbligatoria.",
-            'password.min' => "La password deve avere almeno :min caratteri.", 
-            'password.confirmed' => "Le due password non coincidono.",
-
-            'surname.required' => "Il cognome è obbligatorio.",
-            'surname.string' => "Il cognome deve essere un testo valido.",
-            'surname.max' => "Il cognome non può superare 30 caratteri.",
-
-            'CF.required' => "Il codice fiscale è obbligatorio.",
-            'CF.string' => "Il codice fiscale deve essere un testo valido.",
-            'CF.unique' => "Questo codice fiscale è già stato registrato.",
-            'CF.size' => "Il codice fiscale deve essere di esattamente 16 caratteri.",
-            'CF.regex' => "Il codice fiscale inserito non è valido.",
-
-            'address.string' => "L'indirizzo deve essere un testo valido.",
-            'address.max' => "L'indirizzo non può superare 100 caratteri.",
-
-            'phone.string' => "Il numero di telefono deve essere un testo valido.",
-            'phone.unique' => "Questo numero di telefono è già stato registrato.",
-            'phone.max' => "Il numero di telefono non può superare 13 caratteri.",
-            'phone.min' => "Il numero di telefono deve avere almeno 9 caratteri.",
-            'phone.regex' => "Il numero di telefono inserito non è valido.",
-        ]);
+        $validated = $request->validated();
 
         // 2. Creazione Utente nel Database
 
@@ -155,7 +95,7 @@ class AuthController extends Controller
         return back()->with('status', 'Registrazione utente completata!');
     }
 
-    public function logout(Request $request) {
+    public function logout(StoreUserRequest $request) {
         // 1. Esegue il logout
         Auth::logout();
 

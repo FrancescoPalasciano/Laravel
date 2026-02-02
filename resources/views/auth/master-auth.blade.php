@@ -25,8 +25,8 @@
         <Toaster position="top-right" rich-colors close-button /> -->
     </div>
 <!-- TASK -->
-<!-- spostare i validator -->
-<!-- modifica alert --QUASI -->
+<!-- spostare i validator -FATTO-->
+<!-- modifica alert --FATTO -->
 <!-- indentare il codice BENE -QUASI FATTO -->
 <!-- inserire il create -FATTO -->
 <!-- disattivazione utente -FATTO -->

@@ -12,17 +12,20 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
 class AuthController extends Controller
 {
 
     // Gestisce il login
-    public function login(StoreUserRequest $request) {
+    public function login(Request $request) {
 
         
         // 1. Validazione base
-        $credentials = $request->validated();
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
 
         $user = User::where('email', $request->input('email'))->first();
         // Controlliamo se l'utente esiste e se è disabilitato
@@ -52,7 +55,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             
-            // Login riuscito: CANCELLIAMO i tentativi falliti registrati
+            // Login riuscito: cancello i tentativi falliti registrati
             RateLimiter::clear($throttleKey);
 
             $request->session()->regenerate();
@@ -64,9 +67,6 @@ class AuthController extends Controller
         // Aumentiamo il contatore dei tentativi falliti (blocca per 60 secondi dopo i 5 errori)
         RateLimiter::hit($throttleKey, 60);
 
-        // Calcoliamo quanti tentativi rimangono per mostrarlo all'utente (opzionale)
-        $tentativiRimasti = RateLimiter::retriesLeft($throttleKey, 5);
-
         return back()->withErrors([
             'email' => "Credenziali errate.",
         ])->onlyInput('email');
@@ -74,14 +74,14 @@ class AuthController extends Controller
 
 
     // Funzione che gestisce la REGISTRAZIONE
-    public function register(StoreUserRequest $request) {
+    public function register(UpdateUserRequest $request) {
         
         // 1. Validiamo i dati in arrivo
         $validated = $request->validated();
 
         // 2. Creazione Utente nel Database
 
-        $user = User::create([
+        $user = User::save([
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'CF' => $validated['CF'],
@@ -95,7 +95,7 @@ class AuthController extends Controller
         return back()->with('status', 'Registrazione utente completata!');
     }
 
-    public function logout(StoreUserRequest $request) {
+    public function logout(UpdateUserRequest $request) {
         // 1. Esegue il logout
         Auth::logout();
 

@@ -38,6 +38,7 @@ import {
   IconLoader,
   IconPlus,
   IconCircle,
+  IconCircleFilled,
 } from "@tabler/icons-vue"
 import {
   FlexRender,
@@ -153,8 +154,8 @@ const columns: ColumnDef<TableData>[] = [
       const status = row.getValue("status") as string
       return h("div", { class: "flex items-center gap-2 px-2" }, [
         status === "Active"
-          ? h(IconCircle, { class: "h-4 w-4 text-emerald-500" })
-          : h(IconCircle, { class: "h-4 w-4 text-orange-500" }),
+          ? h(IconCircleFilled, { class: "h-4 w-4 text-emerald-500" })
+          : h(IconCircleFilled, { class: "h-4 w-4 text-orange-500" }),
       ])
     },
   },

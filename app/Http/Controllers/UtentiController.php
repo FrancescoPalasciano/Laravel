@@ -98,7 +98,7 @@ class UtentiController extends Controller
         return redirect()->route('utenti')->with('status', 'Utente eliminato con successo.');
     }
 
-    function updateUser(User $user,UpdateUserRequest $request)
+    function updateUser(User $user, UpdateUserRequest $request)
     {
 
         // dd($Olduser);
@@ -150,11 +150,9 @@ class UtentiController extends Controller
         }
 
         $user = User::findOrFail($id);
-        if ($user->status === 'Active') {
-            $user->status = 'Disabled';
-        } else {
-            $user->status = 'Active';
-        }   
+        
+        $user->status = ($user->status === 'Active') ? 'Inactive' : 'Active';
+   
         $user->save();
 
         $statusMessage = $user->status === 'Active' ? 'Utente abilitato con successo.' : 'Utente disabilitato con successo.';

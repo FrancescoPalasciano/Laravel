@@ -17,7 +17,7 @@ class UpdateUserRequest extends FormRequest
     {
         // Recuperiamo l'ID dell'utente dalla rotta. 
         // Se la tua rotta è /users/{user}, $this->route('user') prenderà l'ID o il modello.
-        $userId = $this->route('user')->id;
+        $userId = $this->route('user')->id? $this->route('user')->id : null;
 
         return [
             // Unique ma ignora l'utente corrente

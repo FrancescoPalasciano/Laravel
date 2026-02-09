@@ -24,16 +24,6 @@
         <!-- <router-view />
         <Toaster position="top-right" rich-colors close-button /> -->
     </div>
-<!-- TASK -->
-<!-- spostare i validator -FATTO-->
-<!-- modifica alert --FATTO -->
-<!-- indentare il codice BENE -QUASI FATTO -->
-<!-- inserire il create -FATTO -->
-<!-- disattivazione utente -FATTO -->
-<!-- tabella -FATTO -->
-<!-- spostare le crude utente nell'user controller -FATTO-->
-<!-- sistemare le rotte e reindirizzamenti -FATTO-->
-<!-- sistemnare regex numero -FATTO-->
 <style>
     /* Evita lo scroll mentre carica */
     body.loading { overflow: hidden; }
